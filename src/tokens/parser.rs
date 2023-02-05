@@ -19,17 +19,26 @@ pub fn parse(code: String) -> Result<Vec<Token>, Error> {
         ("!", Token::Not),
         ("+", Token::Addition),
         ("-", Token::Subtraction),
+        ("/", Token::Division),
+        ("%", Token::Modulus),
+        ("{", Token::BeginBlock),
+        ("}", Token::EndBlock),
+        ("\n", Token::EndStatement),
         ("let", Token::Let),
         ("print", Token::Print),
         ("if", Token::If),
         ("else", Token::Else),
-        ("\n", Token::EndStatement),
-
+        ("true", Token::LiteralBoolean(true)),
+        ("false", Token::LiteralBoolean(false)),
+        
         // Shorter tokens may conflict with longer ones
         // Longer ones should be placed first
         ("==", Token::Equal),
         ("!=", Token::NotEqual),
         ("=", Token::Assignment),
+        
+        ("**", Token::Exponent),
+        ("*", Token::Multiplication),
 
         (">=", Token::GreaterThanOrEqual),
         (">", Token::GreaterThan),
@@ -45,20 +54,19 @@ pub fn parse(code: String) -> Result<Vec<Token>, Error> {
             break;
         }
         
-        let mut const_token = None;
+        // TODO: Refactor this
+        let mut has_found_token = false;
 
         for (token, value) in token_list.iter() {
             if scanner.is_next_token(token) {
                 scanner.take_token(token);
-                const_token = Some(value.to_owned());
+                all_tokens.push(value.to_owned());
+                has_found_token = true;
                 break;
             }
         }
-
-        if let Some(token) = const_token {
-            all_tokens.push(token);
-            continue;
-        }
+        
+        if has_found_token { continue; }
 
         if scanner.is_next_token("\"") {
             let token = parse_string(&mut scanner);

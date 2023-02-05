@@ -13,12 +13,18 @@ pub enum Token {
 
     Addition,
     Subtraction,
+    Division,
+    Multiplication,
+    Exponent,
+    Modulus,
 
     Let,
     Assignment,
     Print,
     If,
     Else,
+    BeginBlock,
+    EndBlock,
     EndStatement,
 
     LiteralString(String),
