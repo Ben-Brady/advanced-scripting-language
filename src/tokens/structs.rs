@@ -1,7 +1,7 @@
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Token {
-    Equal,
-    NotEqual,
+    Equals,
+    NotEquals,
     GreaterThan,
     GreaterThanOrEqual,
     LessThan,
