@@ -1,5 +1,5 @@
-use super::Token;
-use crate::{Error, Scanner};
+use super::{Token, Scanner};
+use crate::Error;
 use std::fs::read_to_string;
 
 
@@ -20,23 +20,21 @@ pub fn parse(code: String) -> Result<Vec<Token>, Error> {
             break;
         }
         
-        if let Some(token) = find_constant_tokens(&mut scanner) {
-            all_tokens.push(token);
-            continue;
-        }
-
         let is_string = scanner.is_next_token("\"");
         let is_number = scanner.does_next_match(|ch| ch.is_numeric());
         let is_variable = scanner.does_next_match(|ch| matches!(ch, 'A'..='Z' | 'a'..='z' | '_'));
 
-        if is_string {
+        if let Some(token) = find_constant_tokens(&mut scanner) {
+            all_tokens.push(token);
+            continue;
+        } else if is_string {
             let token = parse_string(&mut scanner);
             all_tokens.push(token);
         } else if is_number {
             let token = parse_number(&mut scanner);
             all_tokens.push(token);
         } else if is_variable {
-            let var_name = scanner.take_while(|ch| !ch.is_whitespace());
+            let var_name = scanner.take_while(|ch| matches!(ch, 'A'..='Z' | 'a'..='z' | '_'));
             let token = Token::Variable(var_name.to_string());
             all_tokens.push(token);
         } else {
@@ -78,7 +76,7 @@ fn find_constant_tokens(scanner: &mut Scanner) -> Option<Token> {
         (">=", Token::GreaterThanOrEqual),
         (">", Token::GreaterThan),
 
-        ("<=", Token::LessThanOrQual),
+        ("<=", Token::LessThanOrEqual),
         ("<", Token::LessThan),
     ];
 
@@ -100,9 +98,7 @@ fn parse_string(scanner: &mut Scanner) -> Token {
     let string = scanner.take_while(|ch| ch != &'"');
     scanner.take_token("\"");
     
-    literal.push('"');
     literal.push_str(string.as_str());
-    literal.push('"');
 
     Token::LiteralString(literal)
 }

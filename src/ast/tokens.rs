@@ -6,60 +6,51 @@ pub enum Type {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub enum ComparsionOperator {
-    Equal,
-    GreaterThan,
-    LessThan,
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub enum BooleanOperator {
-    And,
-    Or,
-    Not,
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub enum MathematicalOperator {
-    Addition,
-    Subtraction,
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Literal {
-    Number(u64),
+    Number(usize),
     String(String),
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub enum Value {
-    Literal(Literal),
-    Variable(String),
-    Expression,
+    Boolean(bool),
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum BinaryOperator {
-    Comparison(ComparsionOperator),
-    Boolean(BooleanOperator),
-    Mathematical(MathematicalOperator),
-}
+    Equals,
+    NotEquals,
+    GreaterThan,
+    GreaterThanOrEqual,
+    LessThan,
+    LessThanOrEqual,
 
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub struct AST {
-    pub statements: Vec<Expression>,
-}
+    And,
+    Or,
 
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub struct IfStatement {
-    conditon: Expression,
-    if_branch: Vec<Expression>,
-    else_branch: Vec<Expression>,
+    Addition,
+    Subtraction,
+    Division,
+    Multiplication,
+    Exponent,
+    Modulus,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Expression {
-    If(Box<IfStatement>),
-    BinOp(BinaryOperator),
-    Value(Value),
+    Literal(Literal),
+    Variable(String),
+    If {
+        condition: Box<Expression>,
+        if_branch: Box<Expression>,
+        else_branch: Box<Option<Expression>>,
+    },
+    BinOp {
+        op: BinaryOperator,
+        left_side: Box<Expression>,
+        right_side: Box<Expression>
+    },
+    Assignment {
+        name: String,
+        value: Box<Expression>,
+    },
+    Print(Box<Expression>),
 }
+
+pub type AST = Vec<Expression>;

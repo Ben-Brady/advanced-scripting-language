@@ -5,7 +5,7 @@ pub enum Token {
     GreaterThan,
     GreaterThanOrEqual,
     LessThan,
-    LessThanOrQual,
+    LessThanOrEqual,
     
     And,
     Or,
@@ -17,11 +17,13 @@ pub enum Token {
     Multiplication,
     Exponent,
     Modulus,
-
-    Let,
+    
     Assignment,
+    
+    Let,
     Print,
     If,
+
     Else,
     BeginBlock,
     EndBlock,

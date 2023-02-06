@@ -39,6 +39,6 @@ impl Scanner {
     }
 
     pub fn strip_whitespace(&mut self) {
-        self.take_while(|ch| ch == &' ');
+        self.take_while(|ch| ch.is_whitespace());
     }
 }
