@@ -1,4 +1,9 @@
-let hello = "Hello";
-let world = "World";
+let foo = "foo"
 
-print hello + " " + world
+let bar = if foo == "foo" {
+  true
+} else {
+  false
+}
+
+print bar

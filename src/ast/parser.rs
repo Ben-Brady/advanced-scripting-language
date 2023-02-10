@@ -1,92 +1,36 @@
-
 use crate::{Error, Token};
-use super::AST;
+use super::utils::{pop_next_token, peek_next_token, require_next_token};
+use super::{Block, utils};
 use super::tokens::{Expression, Literal, BinaryOperator};
 
 
-pub fn demo() -> AST {
-    vec![
-        Expression::Assignment {
-            name: "var_a".to_string(),
-            value: Box::new(Expression::Literal(Literal::Number(1))),
-        },
-        Expression::If {
-            condition: Box::new(Expression::BinOp {
-                op: BinaryOperator::Equals,
-                left_side: Box::new(
-                    Expression::Variable("var_a".to_string()
-                )),
-                right_side: Box::new(
-                    Expression::Literal(Literal::Number(1)
-                )),
-            }),
-            if_branch: Box::new(
-                Expression::Print(
-                    Box::new(Expression::Literal(
-                        Literal::String("This is gonna work".to_string())
-                    ))
-                )
-            ),
-            else_branch: Box::new(
-                Some(Expression::Print(
-                    Box::new(Expression::Literal(
-                        Literal::String("This ain't Working".to_string())
-                    ))
-                ))
-            ),
-        }
-    ]
+pub fn construct(tokens: Vec<Token>) -> Result<Block, Error> {
+    let mut tokens = tokens;
+    tokens.reverse();
+    construct_expressions(&mut tokens)
 }
 
-pub fn construct(tokens: Vec<Token>) -> Result<AST, Error> {
-    let ast = tokens
-        .split(|token| token == &Token::EndStatement)
-        .filter(|tokens| !tokens.is_empty())
-        .map(|tokens| {
-            let mut tokens = tokens.to_vec();
-            tokens.reverse();
-            construct_expression(&mut tokens).unwrap()
-        })
-        .collect();
-    Ok(ast)
-}
-
-fn get_next_token(tokens: &mut Vec<Token>) -> Result<Token, Error>{
-    tokens.pop().ok_or(Error::UnexpectedEndOfTokens)
-}
-
-fn peek_next_token(tokens: &mut Vec<Token>) -> Result<&Token, Error>{
-    tokens.get(0).ok_or(Error::UnexpectedEndOfTokens)
-}
-
-fn assert_take_token(tokens: &mut Vec<Token>, token: Token) -> Result<(), Error>{
-    let next_token = peek_next_token(tokens)?;
-    if are_variants_equal(next_token, &token) {
-        Err(Error::UnexpectedToken)
-    } else {
-        Ok(())
-    }
-}
 
 fn construct_expression(tokens: &mut Vec<Token>) -> Result<Expression, Error> {
-    let first_token = match get_next_token(tokens)? {
-        Token::Let => construct_assignment(tokens),
+    let first_token = match utils::pop_next_token(tokens)? {
+        Token::BeginBlock => construct_block(tokens),
+        Token::Let => construct_declaration(tokens),
         Token::Print => construct_print(tokens),
         Token::If => construct_if(tokens),
+        Token::Variable(name) => match utils::peek_next_token(tokens) {
+            Ok(Token::Assignment) => construct_assignment(name, tokens),
+            _ => Ok(Expression::Variable(name)),
+        },
         Token::LiteralBoolean(value) => Ok(Expression::Literal(Literal::Boolean(value))),
         Token::LiteralNumber(value) => Ok(Expression::Literal(Literal::Number(value))),
         Token::LiteralString(value) => Ok(Expression::Literal(Literal::String(value))),
-        Token::Variable(name) => Ok(Expression::Variable(name)),
         token => {
             println!("Unexpected Token: {:?}", token);
             Err(Error::UnexpectedToken)?
         },
     };
 
-    if tokens.is_empty() {
-        first_token
-    } else {
-        let op_token = tokens.pop().unwrap();
+    if let Ok(op_token) = peek_next_token(tokens) {
         let op = match op_token {
             Token::Addition => Some(BinaryOperator::Addition),
             Token::Equals => Some(BinaryOperator::Equals),
@@ -105,31 +49,34 @@ fn construct_expression(tokens: &mut Vec<Token>) -> Result<Expression, Error> {
             _ => None,
         };
         
-        
         if let Some(op) = op {
-            Ok(Expression::BinOp {
+            pop_next_token(tokens)?;
+            return Ok(Expression::BinOp {
                 op,
                 left_side: Box::new(first_token?),
                 right_side: Box::new(construct_expression(tokens)?),
-            })
-        } else {
-            first_token
+            });
         }
     }
+    first_token
 }
 
-fn construct_assignment(tokens: &mut Vec<Token>) -> Result<Expression, Error> {
-    match get_next_token(tokens)? {
-        Token::Variable(name) => {
-            if !(matches!(get_next_token(tokens)?, Token::Assignment)) {
-                Err(Error::UnexpectedToken)?
-            }
-
-            let value = Box::new(construct_expression(tokens)?);
-            Ok(Expression::Assignment { name, value })
-        },
+fn construct_declaration(tokens: &mut Vec<Token>) -> Result<Expression, Error> {
+    let name = match utils::pop_next_token(tokens)? {
+        Token::Variable(name) => name,
         _ => Err(Error::UnexpectedToken)?,
-    }
+    };
+    
+    utils::require_next_token(tokens, Token::Assignment)?;
+    let value = Box::new(construct_expression(tokens)?);
+    
+    Ok(Expression::Declaration { name, value })
+}
+
+fn construct_assignment(var_name: String, tokens: &mut Vec<Token>) -> Result<Expression, Error> {
+    utils::require_next_token(tokens, Token::Assignment)?;
+    let value = Box::new(construct_expression(tokens)?);
+    Ok(Expression::Assignment { name: var_name, value })
 }
 
 fn construct_print(tokens: &mut Vec<Token>) -> Result<Expression, Error> {
@@ -140,19 +87,43 @@ fn construct_print(tokens: &mut Vec<Token>) -> Result<Expression, Error> {
 }
 
 fn construct_if(tokens: &mut Vec<Token>) -> Result<Expression, Error> {
-    assert_take_token(tokens, Token::If)?;
     let condition = construct_expression(tokens)?;
-    assert_take_token(tokens, Token::BeginBlock)?;
     let if_branch = construct_expression(tokens)?;
-    assert_take_token(tokens, Token::EndBlock)?;
-
+    
+    let else_branch = match utils::is_next_token_and_take(tokens, Token::Else) {
+        Ok(true) => Some(construct_expression(tokens)?),
+        _ => None
+    };
+    
     Ok(Expression::If {
         condition: Box::new(condition),
         if_branch: Box::new(if_branch),
-        else_branch: Box::new(None)
+        else_branch: Box::new(else_branch)
     })
 }
 
-fn are_variants_equal(a: &Token, b: &Token) -> bool {
-    std::mem::discriminant(a) == std::mem::discriminant(b)
+fn construct_block(tokens: &mut Vec<Token>) -> Result<Expression, Error> {
+    let mut expressions = Vec::new();
+
+    loop {
+        if utils::is_next_token_and_take(tokens, Token::EndBlock)? {
+            break;
+        }
+
+        let expression = construct_expression(tokens)?;
+        expressions.push(expression);
+    }
+
+    Ok(Expression::Block(Box::new(expressions)))
+}
+
+fn construct_expressions(tokens: &mut Vec<Token>) -> Result<Block, Error> {
+    let mut ast = Vec::new();
+
+    while !tokens.is_empty() {
+        let expression = construct_expression(tokens)?;
+        ast.push(expression);
+    }
+
+    Ok(ast)
 }

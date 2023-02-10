@@ -1,15 +1,8 @@
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub enum Type {
-    Boolean,
-    Number,
-    String
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Literal {
+    Boolean(bool),
     Number(usize),
     String(String),
-    Boolean(bool),
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -36,6 +29,7 @@ pub enum BinaryOperator {
 pub enum Expression {
     Literal(Literal),
     Variable(String),
+    Block(Box<Block>),
     If {
         condition: Box<Expression>,
         if_branch: Box<Expression>,
@@ -50,7 +44,11 @@ pub enum Expression {
         name: String,
         value: Box<Expression>,
     },
+    Declaration {
+        name: String,
+        value: Box<Expression>,
+    },
     Print(Box<Expression>),
 }
 
-pub type AST = Vec<Expression>;
+pub type Block = Vec<Expression>;

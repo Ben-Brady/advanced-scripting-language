@@ -16,11 +16,11 @@ One of the project that I hope to undertake soon is writing a simple programing 
 ## Example
 
 ```rust
-let a = 1;
-if a ** 2 == 4 {
-  print a;
+let a = 1
+if (a ** 2) == 4 {
+  print ads
 } else {
-  print false;
+  print false
 }
 ```
 

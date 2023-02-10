@@ -1,4 +1,8 @@
 mod tokens;
-mod parser;
 pub use tokens::*;
-pub use parser::{construct, demo};
+mod utils;
+mod parser;
+pub use parser::construct;
+
+mod demo;
+pub use demo::demo;

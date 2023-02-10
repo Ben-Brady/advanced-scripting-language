@@ -3,7 +3,6 @@ use errors::{Error};
 mod tokens;
 use tokens::Token;
 mod ast;
-use ast::AST;
 mod interpreter;
 use std::env;
 
@@ -11,7 +10,7 @@ use std::env;
 fn main() {
     let filepath = get_filepath();
     let tokens = tokens::parse_file(filepath).expect("Could not parse file into tokens");
-    println!("Tokens: {:#?}", tokens);
+    println!("Tokens: {:?}", tokens);
     let ast = ast::construct(tokens).expect("Could not construct AST from tokens");
     // let ast = ast::demo();
     println!("AST: {:#?}", ast);

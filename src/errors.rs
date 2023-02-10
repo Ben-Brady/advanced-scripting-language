@@ -5,6 +5,5 @@ pub enum Error {
     UnexpectedEndOfTokens,
     InvalidToken,
     UnexpectedToken,
-    UnexpectedKeyword,
     InvalidType,
 }

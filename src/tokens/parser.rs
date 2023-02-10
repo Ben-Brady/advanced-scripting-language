@@ -56,7 +56,7 @@ fn find_constant_tokens(scanner: &mut Scanner) -> Option<Token> {
         ("%", Token::Modulus),
         ("{", Token::BeginBlock),
         ("}", Token::EndBlock),
-        (";", Token::EndStatement),
+        // (";", Token::EndStatement),
         ("let", Token::Let),
         ("print", Token::Print),
         ("if", Token::If),
