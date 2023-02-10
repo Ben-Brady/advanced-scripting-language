@@ -1,8 +1,8 @@
 # Simple Scripting Language (SSL)
 
-One of the project that I hope to undertake soon is writing a simple programing language.
+One of the project I.ve wanted to undertake for a while now is writing a simple programing language.
 
-## Scope
+## Requirements
 
 - Variables/Literals `let a = 1`
 - Integers, Booloean, Strings
