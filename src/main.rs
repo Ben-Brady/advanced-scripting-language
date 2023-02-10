@@ -10,11 +10,11 @@ use std::env;
 fn main() {
     let filepath = get_filepath();
     let tokens = tokens::parse_file(filepath).expect("Could not parse file into tokens");
-    println!("Tokens: {:?}", tokens);
+    println!("Tokens:\n  {:?}", tokens);
     let ast = ast::construct(tokens).expect("Could not construct AST from tokens");
-    println!("AST: {:#?}", ast);
+    println!("Abstract Syntax Tree:\n  {:#?}", ast);
     let output = interpreter::run(ast);
-    println!("Output:\n{}", output);
+    println!("\nOutput:\n{}", output);
 }
 
 fn get_filepath() -> String {
