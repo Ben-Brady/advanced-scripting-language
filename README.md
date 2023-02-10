@@ -16,12 +16,15 @@ One of the project that I hope to undertake soon is writing a simple programing 
 ## Example
 
 ```rust
-let a = 1
-if (a ** 2) == 4 {
-  print ads
+let foo = "foo"
+
+let bar = if foo == "foo" {
+  true
 } else {
-  print false
+  false
 }
+
+print bar
 ```
 
 ## Abstract Syntax Tree
