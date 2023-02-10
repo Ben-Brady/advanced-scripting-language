@@ -1,5 +1,5 @@
 use crate::{Error, Token};
-use super::utils::{pop_next_token, peek_next_token, require_next_token};
+use super::utils::{pop_next_token, peek_next_token};
 use super::{Block, utils};
 use super::tokens::{Expression, Literal, BinaryOperator};
 

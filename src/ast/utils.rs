@@ -9,7 +9,7 @@ pub fn pop_next_token(tokens: &mut Vec<Token>) -> Result<Token, Error>{
     tokens.pop().ok_or(Error::UnexpectedEndOfTokens)
 }
 
-pub fn peek_next_token(tokens: &mut Vec<Token>) -> Result<&Token, Error>{
+pub fn peek_next_token(tokens: &mut [Token]) -> Result<&Token, Error>{
     tokens.last().ok_or(Error::UnexpectedEndOfTokens)
 }
 
@@ -20,14 +20,6 @@ pub fn require_next_token(tokens: &mut Vec<Token>, token: Token) -> Result<(), E
     } else {
         Err(Error::UnexpectedToken)
     }
-}
-
-pub fn possible_next_token(tokens: &mut Vec<Token>, token: Token) -> Result<(), Error>{
-    if are_variants_equal(peek_next_token(tokens)?, &token) {
-        pop_next_token(tokens)?;
-    }
-
-    Ok(())
 }
 
 pub fn is_next_token_and_take(tokens: &mut Vec<Token>, token: Token) -> Result<bool, Error>{

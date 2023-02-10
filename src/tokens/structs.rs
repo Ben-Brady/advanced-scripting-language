@@ -27,7 +27,6 @@ pub enum Token {
     Else,
     BeginBlock,
     EndBlock,
-    EndStatement,
 
     LiteralString(String),
     LiteralNumber(usize),
