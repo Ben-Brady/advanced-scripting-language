@@ -16,7 +16,7 @@ fn main() {
 }
 
 fn get_filepath() -> String {
-    let default_file: String = "main.ssl".to_string();
+    let default_file: String = "main.asl".to_string();
     let path_arg = env::args().nth(1);
     path_arg.unwrap_or(default_file)
 }
