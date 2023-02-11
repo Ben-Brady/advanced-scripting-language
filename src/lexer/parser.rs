@@ -1,5 +1,5 @@
 use super::{Token, Scanner};
-use crate::Error;
+use super::Error;
 use std::fs::read_to_string;
 
 
@@ -57,9 +57,9 @@ fn find_constant_tokens(scanner: &mut Scanner) -> Option<Token> {
         ("{", Token::BeginBlock),
         ("}", Token::EndBlock),
         // (";", Token::EndStatement),
-        ("let", Token::Let),
-        ("print", Token::Print),
-        ("if", Token::If),
+        ("let ", Token::Let),
+        ("print ", Token::Print),
+        ("if ", Token::If),
         ("else", Token::Else),
         ("true", Token::LiteralBoolean(true)),
         ("false", Token::LiteralBoolean(false)),

@@ -1,19 +1,17 @@
-mod errors;
-use errors::{Error};
-mod tokens;
-use tokens::Token;
-mod ast;
+mod lexer;
+use lexer::Token;
+mod parser;
 mod interpreter;
 use std::env;
 
 
 fn main() {
     let filepath = get_filepath();
-    let tokens = tokens::parse_file(filepath).expect("Could not parse file into tokens");
+    let tokens = lexer::parse_file(filepath).expect("Could not parse file into tokens");
     println!("Tokens:\n  {:?}", tokens);
-    let ast = ast::construct(tokens).expect("Could not construct AST from tokens");
+    let ast = parser::construct(tokens).expect("Could not construct AST from tokens");
     println!("Abstract Syntax Tree:\n  {:#?}", ast);
-    let output = interpreter::run(ast);
+    let output = interpreter::run(ast).expect("Interpreter Error");
     println!("\nOutput:\n{}", output);
 }
 

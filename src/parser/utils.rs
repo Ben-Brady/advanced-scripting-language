@@ -1,4 +1,5 @@
-use crate::{Token, Error};
+use crate::Token;
+use super::Error;
 
 
 pub fn are_variants_equal<T>(a: &T, b: &T) -> bool {

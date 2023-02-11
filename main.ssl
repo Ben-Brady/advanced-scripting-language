@@ -1,7 +1,7 @@
 let foo = "foo"
 
 let bar = if foo == "foo" {
-  true
+  1
 } else {
   false
 }

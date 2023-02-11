@@ -1,56 +1,40 @@
-# Simple Scripting Language (SSL)
+# Advanced Scripting Language (ASL)
 
-One of the project I.ve wanted to undertake for a while now is writing a simple programing language.
+An extention to my previous language project that expanded to include
 
 ## Requirements
 
-- Variables/Literals `let a = 1`
-- Integers, Booloean, Strings
-- Block Based
-- if/else: `if else`
-- comparison operators: `== != > >= < <=`
-- boolean operators: `|| && !`
-- mathematical operators: `+ - / * ** %`
-- print: `print`
+- All features from SSL
+- Removal of statements
+- Strict Typing
+- Compiled Using LLVM
+- Primatives and Structs
+- Loops
+- Functions
+- Arrays
 
 ## Example
 
 ```rust
-let foo = "foo"
-
-let bar = if foo == "foo" {
-  true
-} else {
-  false
+struct Person {
+  name: String
 }
 
-print bar
+
+let names = [
+  Person{name: "dan"},
+  Person{name: "dave"},
+  Person{name: "daniel"},
+]
+
+
+fn say_hello(name: Person) -> String {
+  return "Hello, " + name
+}
+
+let hellos = for name in names {
+  say_hello(name)
+}
+
+print(hellos)
 ```
-
-## Abstract Syntax Tree
-
-- statement
-  - Assignment
-    - variable: `num`
-    - value: `1`
-- if statement
-  - condition
-    - binary operator
-      - op: `comparsion`
-      - a
-        - binary operator
-          - op: `exponent`
-          - a
-            - Variable: `num`
-          - b
-            - Literal: `2`
-      - b
-        - Literal: `4`
-  - branch
-    - statement
-      - print
-        - variable: `num`
-  - else
-    - statement
-      - print
-        - Literal: `false`
