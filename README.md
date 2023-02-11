@@ -1,6 +1,6 @@
 # Advanced Scripting Language (ASL)
 
-An extention to my previous language project that expanded to include
+An extention to my previous language project
 
 ## Requirements
 
